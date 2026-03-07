@@ -1,0 +1,33 @@
+name: auto_jandi
+
+on:
+   schedule: # [important] delete this # mark below 2 if you want to schedule every day
+    - cron: '50 14 * * *'  # will be automatically executed everyday 23:50 (UTC)
+  workflow_dispatch:  # allow manual execution
+
+jobs:
+  auto_jandi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Update file with date
+        run: |
+          if [ ! -f $GITHUB_WORKSPACE/auto_jandi_log.txt ]; then
+            touch $GITHUB_WORKSPACE/auto_jandi_log.txt
+          fi
+          echo "Jandi automatically Updated on $(date +'%Y-%m-%d')" >> $GITHUB_WORKSPACE/auto_jandi_log.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'tjdqls0508'
+          git config --global user.email 'a01029165057@gmail.com'
+          git add $GITHUB_WORKSPACE/auto_jandi_log.txt
+          git commit -m "Jandi automatically Updated on $(date +'%Y-%m-%d')"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.AUTO_JANDI }} # must add github token name AUTO_JANDI into github actions secret variable
+          branch : main # select branch to push
